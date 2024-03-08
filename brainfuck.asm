@@ -122,8 +122,6 @@ main proc
                       cmp  byte ptr [code + si], ']'
                       je   decreaseLoopNest
                       inc  si
-                      cmp  si, codeLen                  ; Avoid overflow
-                      jne  searchLoopEnd
                       jmp  nextCommand                  ; Safety jump
     increaseLoopNest: 
                       inc  cx
