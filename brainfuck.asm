@@ -1,14 +1,21 @@
 .model tiny
 .data
-    tape     db 10000 dup(0)
-    filename db 128 dup(0)
-    code     db 10000 dup(0)
-    codeLen  dw 0
+    tape     db 10000 dup(?)
+    filename db 128 dup(?)
+    code     db 10000 dup(?)
+    codeLen  dw ?
 
 .code
                       org  100h
 
 main proc
+                      xor  di, di                       ; Tape pointer
+                      mov  cx, 10000                    ; Tape length
+    clearTape:        
+                      mov  byte ptr [tape + di], 0
+                      inc  di
+                      loop clearTape                    ; Loop until CX is 0
+
     ; Read argument
                       xor  di, di                       ; Clear filename index
                       mov  si, offset 82h               ; Set SI to point to the command line
