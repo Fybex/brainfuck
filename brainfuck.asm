@@ -104,7 +104,7 @@ main proc
     startLoop:        
                       push si                           ; Save loop start pointer
                       cmp  byte ptr [tape + di], 0
-                      jz   findLoopEnd                  ; Skil loop if 0
+                      jz   findLoopEnd                  ; Skip loop if 0
                       jmp  nextCommand
 
     endLoop:          
@@ -114,15 +114,14 @@ main proc
                       jmp  nextCommand
 
     findLoopEnd:      
-                      inc  si                           ; Next command
                       mov  cx, 1                        ; Increase loop nest level
     searchLoopEnd:    
+                      inc  si                           ; Next command
                       cmp  byte ptr [code + si], '['
                       je   increaseLoopNest
                       cmp  byte ptr [code + si], ']'
                       je   decreaseLoopNest
-                      inc  si
-                      jmp  nextCommand                  ; Safety jump
+                      jmp  searchLoopEnd
     increaseLoopNest: 
                       inc  cx
                       jmp  searchLoopEnd
