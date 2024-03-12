@@ -137,7 +137,7 @@ main proc
                       jmp  nextCommand
 
     output:           
-                      mov  dl, [tape + di]
+                      mov  dx, [tape + di]
                       mov  ah, 02h                      ; Stdout function code
                       int  21h
                       jmp  nextCommand
