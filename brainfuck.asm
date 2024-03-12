@@ -144,11 +144,13 @@ main proc
                       jmp  nextCommand
 
     inputChar:        
-                      mov  ah, 01h                      ; Stdin function code
+                      mov  ah, 3Fh                      ; Stdin function code
+                      mov  bx, 0
+                      lea  dx, tape
+                      add  dx, di                       ; Offset into the tape
                       int  21h
-                      mov  [tape + di], al
                       jmp  nextCommand
-
+                    
     nextCommand:      
                       inc  si
                       jmp  interpretLoop
