@@ -147,7 +147,10 @@ main proc
                       mov  bx, 0
                       lea  dx, tape
                       add  dx, di                       ; Offset into the tape
+                      push cx
+                      mov  cx, 1                        ; Number of bytes to read
                       int  21h
+                      pop  cx
                       jmp  nextCommand
                     
     nextCommand:      
