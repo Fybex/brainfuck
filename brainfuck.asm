@@ -1,6 +1,6 @@
 .model tiny
 .data
-    tape     db 10000 dup(?)
+    tape     dw 10000 dup(?)
     filename db 128 dup(?)
     code     db 10000 dup(?)
     codeLen  dw ?
@@ -13,7 +13,7 @@ main proc
                       mov  cx, 10000                    ; Tape length
     clearTape:        
                       mov  byte ptr [tape + di], 0
-                      inc  di
+                      add  di, 2
                       loop clearTape                    ; Loop until CX is 0
 
     ; Read argument
@@ -86,29 +86,29 @@ main proc
 
     ; Commands
     increment:        
-                      inc  byte ptr [tape + di]
+                      inc  word ptr [tape + di]
                       jmp  nextCommand
 
     decrement:        
-                      dec  byte ptr [tape + di]
+                      dec  word ptr [tape + di]
                       jmp  nextCommand
 
     moveRight:        
-                      inc  di
+                      add  di, 2
                       jmp  nextCommand
 
     moveLeft:         
-                      dec  di
+                      sub  di, 2
                       jmp  nextCommand
 
     startLoop:        
                       push si                           ; Save loop start pointer
-                      cmp  byte ptr [tape + di], 0
+                      cmp  word ptr [tape + di], 0
                       jz   findLoopEnd                  ; Skip loop if 0
                       jmp  nextCommand
 
     endLoop:          
-                      cmp  byte ptr [tape + di], 0
+                      cmp  word ptr [tape + di], 0
                       jnz  repeatLoop                   ; Jump back to start if not 0
                       add  sp, 2                        ; Clean up the stack
                       jmp  nextCommand
