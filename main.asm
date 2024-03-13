@@ -9,12 +9,11 @@
 
 main proc
     ; Clean tape
-                      mov  di, offset tape
-    clearTape:        
-                      mov  word ptr [di], 0
-                      add  di, 2
-                      cmp  di, 20000
-                      jne  clearTape
+                      mov  di, offset tape          ; Tape pointer
+                      xor  ax, ax
+                      mov  cx, 10000                ; Number of cells
+                      rep  stosw
+
 
     ; Read argument
                       mov  si, 80h                  ; Pointer to command line length
