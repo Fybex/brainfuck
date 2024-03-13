@@ -48,12 +48,14 @@ main proc
     ; Intepreter
                       mov  di, offset tape          ; Tape pointer
                       mov  si, offset code
+                      dec  si                       ; Start at -1
 
     interpretLoop:    
                       cmp  si, codeLastPointer      ; Check if end of code
                       jne  interpretContinue
                       jmp  finish
     interpretContinue:
+                      inc  si                       ; Next command
                       mov  al, [si]                 ; Load the current command
 
     ; Command switch
@@ -74,37 +76,36 @@ main proc
                       cmp  al, ','
                       je   inputChar
 
-                      inc  si                       ; Skip unknown commands
                       jmp  interpretLoop
 
     ; Commands
     increment:        
                       inc  word ptr [di]
-                      jmp  nextCommand
+                      jmp  interpretLoop
 
     decrement:        
                       dec  word ptr [di]
-                      jmp  nextCommand
+                      jmp  interpretLoop
 
     moveRight:        
                       add  di, 2
-                      jmp  nextCommand
+                      jmp  interpretLoop
 
     moveLeft:         
                       sub  di, 2
-                      jmp  nextCommand
+                      jmp  interpretLoop
 
     startLoop:        
                       push si                       ; Save loop start pointer
                       cmp  word ptr [di], 0
                       jz   findLoopEnd              ; Skip loop if 0
-                      jmp  nextCommand
+                      jmp  interpretLoop
 
     endLoop:          
                       cmp  word ptr [di], 0
                       jnz  repeatLoop               ; Jump back to start if not 0
                       add  sp, 2                    ; Clean up the stack
-                      jmp  nextCommand
+                      jmp  interpretLoop
 
     findLoopEnd:      
                       mov  cx, 1                    ; Increase loop nest level
@@ -122,12 +123,12 @@ main proc
                       dec  cx
                       jnz  searchLoopEnd
                       add  sp, 2                    ; Clean up the stack
-                      jmp  nextCommand
+                      jmp  interpretLoop
 
     repeatLoop:       
                       pop  si                       ; Get loop start address
                       push si                       ; Save it again
-                      jmp  nextCommand
+                      jmp  interpretLoop
 
     output:           
                       mov  dx, [di]
@@ -139,7 +140,7 @@ main proc
     outputContinue:   
                       mov  dx, [di]
                       int  21h
-                      jmp  nextCommand
+                      jmp  interpretLoop
 
     inputChar:        
                       mov  ah, 3Fh                  ; Stdin function code
@@ -155,9 +156,6 @@ main proc
     skipEOF:          
                       cmp  word ptr [di], 0Dh       ; Read again if it's a carriage return
                       je   inputChar
-                    
-    nextCommand:      
-                      inc  si
                       jmp  interpretLoop
 
     ; End
