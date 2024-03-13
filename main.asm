@@ -18,32 +18,32 @@ main proc
                       jne  clearTape
 
     ; Read argument
-                      mov  di, offset filename             ; Set DI to point to the filename
-                      mov  si, offset 82h                  ; Set SI to point to the command line
+                      mov  di, offset filename          ; Set DI to point to the filename
+                      mov  si, offset 82h               ; Set SI to point to the command line
     copyLoop:         
-                      mov  al, [si]                        ; Load character from command line
-                      cmp  al, 0Dh                         ; Compare with carriage return
+                      mov  al, [si]                     ; Load character from command line
+                      cmp  al, 0Dh                      ; Compare with carriage return
                       je   finishCopy
                       mov  byte ptr [di], al
                       inc  di
-                      inc  si                              ; Move to next character in command line
+                      inc  si                           ; Move to next character in command line
                       jmp  copyLoop
 
     finishCopy:       
-                      mov  byte ptr [di], 0                ; Null-terminate filename
+                      mov  byte ptr [di], 0             ; Null-terminate filename
     
     ; Get content of code file into code variable
     ; Open file
                       mov  ah, 3Dh
-                      mov  al, 0                           ; Open file for reading
+                      mov  al, 0                        ; Open file for reading
                       lea  dx, filename
                       int  21h
-                      mov  bx, ax                          ; Save file handle
+                      mov  bx, ax                       ; Save file handle
 
     ; Read file content into the code variable
                       mov  ah, 3Fh
                       lea  dx, code
-                      mov  cx, 10000                       ; Number of bytes to read
+                      mov  cx, 10000                    ; Number of bytes to read
                       int  21h
 
     ; Save number of bytes read
@@ -54,15 +54,15 @@ main proc
                       int  21h
 
     ; Intepreter
-                      xor  di, di                          ; Tape pointer
-                      xor  si, si                          ; Code pointer
+                      mov  di, offset tape
+                      xor  si, si
 
     interpretLoop:    
-                      cmp  si, codeLen                     ; Check if end of code
+                      cmp  si, codeLen                  ; Check if end of code
                       jne  interpretContinue
                       jmp  finish
     interpretContinue:
-                      mov  al, [code + si]                 ; Load the current command
+                      mov  al, [code + si]              ; Load the current command
 
     ; Command switch
                       cmp  al, '+'
@@ -82,16 +82,16 @@ main proc
                       cmp  al, ','
                       je   inputChar
 
-                      inc  si                              ; Skip unknown commands
+                      inc  si                           ; Skip unknown commands
                       jmp  interpretLoop
 
     ; Commands
     increment:        
-                      inc  word ptr [tape + di]
+                      inc  word ptr [di]
                       jmp  nextCommand
 
     decrement:        
-                      dec  word ptr [tape + di]
+                      dec  word ptr [di]
                       jmp  nextCommand
 
     moveRight:        
@@ -103,21 +103,21 @@ main proc
                       jmp  nextCommand
 
     startLoop:        
-                      push si                              ; Save loop start pointer
-                      cmp  word ptr [tape + di], 0
-                      jz   findLoopEnd                     ; Skip loop if 0
+                      push si                           ; Save loop start pointer
+                      cmp  word ptr [di], 0
+                      jz   findLoopEnd                  ; Skip loop if 0
                       jmp  nextCommand
 
     endLoop:          
-                      cmp  word ptr [tape + di], 0
-                      jnz  repeatLoop                      ; Jump back to start if not 0
-                      add  sp, 2                           ; Clean up the stack
+                      cmp  word ptr [di], 0
+                      jnz  repeatLoop                   ; Jump back to start if not 0
+                      add  sp, 2                        ; Clean up the stack
                       jmp  nextCommand
 
     findLoopEnd:      
-                      mov  cx, 1                           ; Increase loop nest level
+                      mov  cx, 1                        ; Increase loop nest level
     searchLoopEnd:    
-                      inc  si                              ; Next command
+                      inc  si                           ; Next command
                       cmp  byte ptr [code + si], '['
                       je   increaseLoopNest
                       cmp  byte ptr [code + si], ']'
@@ -129,39 +129,39 @@ main proc
     decreaseLoopNest: 
                       dec  cx
                       jnz  searchLoopEnd
-                      add  sp, 2                           ; Clean up the stack
+                      add  sp, 2                        ; Clean up the stack
                       jmp  nextCommand
 
     repeatLoop:       
-                      pop  si                              ; Get loop start address
-                      push si                              ; Save it again
+                      pop  si                           ; Get loop start address
+                      push si                           ; Save it again
                       jmp  nextCommand
 
     output:           
-                      mov  dx, [tape + di]
-                      mov  ah, 02h                         ; Stdout function code
-                      cmp  word ptr [tape + di], 0Ah       ; Check if it's a newline
+                      mov  dx, [di]
+                      mov  ah, 02h                      ; Stdout function code
+                      cmp  word ptr [di], 0Ah           ; Check if it's a newline
                       jne  outputContinue
-                      mov  dl, 0Dh                         ; Add carriage return before newline
+                      mov  dl, 0Dh                      ; Add carriage return before newline
                       int  21h
     outputContinue:   
-                      mov  dx, [tape + di]
+                      mov  dx, [di]
                       int  21h
                       jmp  nextCommand
 
     inputChar:        
-                      mov  ah, 3Fh                         ; Stdin function code
+                      mov  ah, 3Fh                      ; Stdin function code
                       mov  bx, 0
-                      lea  dx, [tape + di]                 ; Offset into the tape
-                      push cx                              ; Save loop counter
-                      mov  cx, 1                           ; Number of bytes to read
+                      lea  dx, [di]                     ; Offset into the tape
+                      push cx                           ; Save loop counter
+                      mov  cx, 1                        ; Number of bytes to read
                       int  21h
-                      pop  cx                              ; Restore loop counter
+                      pop  cx                           ; Restore loop counter
                       or   ax, ax
                       jnz  skipEOF
-                      mov  word ptr [tape + di], 0FFFFh    ; Set to -1 if EOF
+                      mov  word ptr [di], 0FFFFh        ; Set to -1 if EOF
     skipEOF:          
-                      cmp  word ptr [tape + di], 0Dh       ; Read again if it's a carriage return
+                      cmp  word ptr [di], 0Dh           ; Read again if it's a carriage return
                       je   inputChar
                     
     nextCommand:      
