@@ -10,27 +10,27 @@
 
 main proc
     ; Clean tape
-                      xor  di, di                          ; Tape pointer
+                      mov  di, offset tape
     clearTape:        
-                      mov  word ptr [tape + di], 0
+                      mov  word ptr [di], 0
                       add  di, 2
                       cmp  di, 20000
                       jne  clearTape
 
     ; Read argument
-                      xor  di, di                          ; Clear filename index
+                      mov  di, offset filename             ; Set DI to point to the filename
                       mov  si, offset 82h                  ; Set SI to point to the command line
     copyLoop:         
                       mov  al, [si]                        ; Load character from command line
                       cmp  al, 0Dh                         ; Compare with carriage return
                       je   finishCopy
-                      mov  [filename+di], al
+                      mov  byte ptr [di], al
                       inc  di
                       inc  si                              ; Move to next character in command line
                       jmp  copyLoop
 
     finishCopy:       
-                      mov  byte ptr [filename+di], 0       ; Null-terminate filename
+                      mov  byte ptr [di], 0                ; Null-terminate filename
     
     ; Get content of code file into code variable
     ; Open file
