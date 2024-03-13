@@ -1,7 +1,6 @@
 .model tiny
 .data
     tape            dw 10000 dup(?)
-    filename        db 128 dup(?)
     code            db 10000 dup(?)
     codeLastPointer dw ?
 
@@ -18,25 +17,19 @@ main proc
                       jne  clearTape
 
     ; Read argument
-                      mov  di, offset filename      ; Set DI to point to the filename
-                      mov  si, offset 82h           ; Set SI to point to the command line
-    copyLoop:         
-                      mov  al, [si]                 ; Load character from command line
-                      cmp  al, 0Dh                  ; Compare with carriage return
-                      je   finishCopy
-                      mov  byte ptr [di], al
-                      inc  di
-                      inc  si                       ; Move to next character in command line
-                      jmp  copyLoop
+                      mov  si, 80h                  ; Pointer to command line length
+                      mov  cl, [si]                 ; Load length of command line
+                      add  si, 2                    ; Move to start of command line text
+                      mov  dx, si                   ; Store the pointer to the start of the command line text
+                      add  si, cx                   ; Move to the end
+                      dec  si
+                      mov  byte ptr [si], 0         ; Null-terminate the command line argument
+                      
 
-    finishCopy:       
-                      mov  byte ptr [di], 0         ; Null-terminate filename
-    
-    ; Get content of code file into code variable
-    ; Open file
+    ; Open file using command line argument directly
                       mov  ah, 3Dh
                       mov  al, 0                    ; Open file for reading
-                      lea  dx, filename
+    ; DX = Pointer to the file name
                       int  21h
                       mov  bx, ax                   ; Save file handle
 
