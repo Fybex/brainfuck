@@ -1,17 +1,16 @@
 .model tiny
 .data
-    tape            dw 10000 dup(?)
-    code            db 10000 dup(?)
-    codeLastPointer dw ?
+    tape dw 10000 dup(?)
+    code db 10000 dup(?)
 
 .code
                       org  100h
 
 main proc
-    ; Clean tape
+    ; Clean tape and code
                       mov  di, offset tape          ; Tape pointer
                       xor  ax, ax
-                      mov  cx, 10000                ; Number of cells
+                      mov  cx, 20000                ; Number of cells
                       rep  stosw
 
     ; Read argument
@@ -36,9 +35,6 @@ main proc
                       mov  cx, 10000                ; Number of bytes to read
                       int  21h
 
-                      add  ax, offset code          ; Add offset to the file content (AX = offset + length)
-                      mov  codeLastPointer, ax      ; Save the last pointer
-
     ; Close file
                       mov  ah, 3Eh
                       int  21h
@@ -48,14 +44,14 @@ main proc
                       mov  si, offset code-1        ; Start at -1
 
     interpretLoop:    
-                      cmp  si, codeLastPointer      ; Check if end of code
+                      inc  si                       ; Next command
+                      mov  al, [si]                 ; Load the current command
+                      cmp  al, 0                    ; Zero if code ends
                       jne  interpretContinue
     ; End of program
                       mov  ah, 4ch
                       int  21h
     interpretContinue:
-                      inc  si                       ; Next command
-                      mov  al, [si]                 ; Load the current command
 
     ; Command switch
                       cmp  al, '+'
