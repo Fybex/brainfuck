@@ -14,7 +14,6 @@ main proc
                       mov  cx, 10000                ; Number of cells
                       rep  stosw
 
-
     ; Read argument
                       mov  si, 80h                  ; Pointer to command line length
                       mov  cl, [si]                 ; Load length of command line
@@ -53,7 +52,9 @@ main proc
     interpretLoop:    
                       cmp  si, codeLastPointer      ; Check if end of code
                       jne  interpretContinue
-                      jmp  finish
+    ; End of program
+                      mov  ah, 4ch
+                      int  21h
     interpretContinue:
                       inc  si                       ; Next command
                       mov  al, [si]                 ; Load the current command
@@ -157,11 +158,6 @@ main proc
                       cmp  word ptr [di], 0Dh       ; Read again if it's a carriage return
                       je   inputChar
                       jmp  interpretLoop
-
-    ; End
-    finish:           
-                      mov  ah, 4ch
-                      int  21h
 
 main endp
 end main
