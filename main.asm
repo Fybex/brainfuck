@@ -46,8 +46,7 @@ main proc
 
     ; Intepreter
                       mov  di, offset tape          ; Tape pointer
-                      mov  si, offset code
-                      dec  si                       ; Start at -1
+                      mov  si, offset code-1        ; Start at -1
 
     interpretLoop:    
                       cmp  si, codeLastPointer      ; Check if end of code
