@@ -104,7 +104,7 @@ main proc
     endLoop:          
                       cmp  word ptr [di], 0
                       jnz  repeatLoop               ; Jump back to start if not 0
-                      add  sp, 2                    ; Clean up the stack
+                      pop  dx                       ; Clean up the stack in non-used dx register
                       jmp  interpretLoop
 
     findLoopEnd:      
@@ -122,7 +122,7 @@ main proc
     decreaseLoopNest: 
                       dec  cx
                       jnz  searchLoopEnd
-                      add  sp, 2                    ; Clean up the stack
+                      pop  dx                       ; Clean up the stack in non-used dx register
                       jmp  interpretLoop
 
     repeatLoop:       
