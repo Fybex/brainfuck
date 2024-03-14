@@ -25,8 +25,7 @@ main proc
                       
 
     ; Open file using command line argument directly
-                      mov  ah, 3Dh
-                      mov  al, 0                    ; Open file for reading
+                      mov  ah, 3Dh                  ; Open file for reading
     ; DX = Pointer to the file name
                       int  21h
                       mov  bx, ax                   ; Save file handle
