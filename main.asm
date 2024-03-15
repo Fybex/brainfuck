@@ -9,7 +9,7 @@
 main proc
     ; Clean tape and code
                       mov  di, offset tape          ; Tape pointer
-                      xor  ax, ax
+                      xor  ax, ax                   ; Fill tape with zeros
                       mov  cx, 20000                ; Number of cells
                       rep  stosw
 
@@ -91,9 +91,9 @@ main proc
                       jmp  interpretLoop
 
     startLoop:        
-                      push si                       ; Save loop start pointer
                       cmp  word ptr [di], 0
                       jz   findLoopEnd              ; Skip loop if 0
+                      push si                       ; Save loop start pointer
                       jmp  interpretLoop
 
     endLoop:          
@@ -113,7 +113,6 @@ main proc
     ; decreaseLoopNest
                       dec  cx
                       jnz  searchLoopEnd
-                      pop  dx                       ; Clean up the stack in non-used dx register
                       jmp  interpretLoop
     increaseLoopNest: 
                       inc  cx
