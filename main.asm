@@ -109,17 +109,15 @@ main proc
                       cmp  byte ptr [si], '['
                       je   increaseLoopNest
                       cmp  byte ptr [si], ']'
-                      je   decreaseLoopNest
-                      jmp  searchLoopEnd
-    increaseLoopNest: 
-                      inc  cx
-                      jmp  searchLoopEnd
-    decreaseLoopNest: 
+                      jne  searchLoopEnd
+    ; decreaseLoopNest
                       dec  cx
                       jnz  searchLoopEnd
                       pop  dx                       ; Clean up the stack in non-used dx register
                       jmp  interpretLoop
-
+    increaseLoopNest: 
+                      inc  cx
+                      jmp  searchLoopEnd
     repeatLoop:       
                       pop  si                       ; Get loop start address
                       push si                       ; Save it again
