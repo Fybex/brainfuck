@@ -14,13 +14,11 @@ main proc
                       rep  stosw
 
     ; Read argument
-                      mov  si, 80h                  ; Pointer to command line length
-                      mov  cl, [si]                 ; Load length of command line
-                      add  si, 2                    ; Move to start of command line text
+                      mov  si, 82h                  ; Pointer to command line first character
+                      mov  cl, [si-2]               ; Load length of command line
                       mov  dx, si                   ; Store the pointer to the start of the command line text
                       add  si, cx                   ; Move to the end
-                      dec  si
-                      mov  byte ptr [si], 0         ; Null-terminate the command line argument
+                      mov  byte ptr [si-1], 0       ; Null-terminate the command line argument
                       
 
     ; Open file using command line argument directly
