@@ -9,7 +9,6 @@
 main proc
     ; Clean tape and code
                       mov  di, offset tape          ; Tape pointer
-                      xor  ax, ax                   ; Fill tape with zeros
                       mov  cx, 20000                ; Number of cells
                       rep  stosw
 
