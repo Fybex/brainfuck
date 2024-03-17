@@ -38,11 +38,10 @@ main proc
 
     ; Intepreter
                       mov  di, offset tape          ; Tape pointer
-                      mov  si, offset code-1        ; Start at -1
+                      mov  si, offset code        ; Start at -1
 
     interpretLoop:    
-                      inc  si                       ; Next command
-                      mov  al, [si]                 ; Load the current command
+                      lodsb                         ; Load the current command
                       cmp  al, 0                    ; Zero if code ends
                       jne  interpretContinue
     ; End of program
@@ -102,10 +101,10 @@ main proc
     findLoopEnd:      
                       mov  cx, 1                    ; Increase loop nest level
     searchLoopEnd:    
-                      inc  si                       ; Next command
-                      cmp  byte ptr [si], '['
+                      lodsb                         ; Next command
+                      cmp  al, '['
                       je   increaseLoopNest
-                      cmp  byte ptr [si], ']'
+                      cmp  al, ']'
                       jne  searchLoopEnd
     ; decreaseLoopNest
                       dec  cx
