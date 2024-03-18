@@ -107,8 +107,7 @@ main proc
                       cmp   al, ']'
                       jne   searchLoopEnd
     ; decreaseLoopNest
-                      dec   cx
-                      jnz   searchLoopEnd
+                      loop  searchLoopEnd            ; Loop until cx = 0
                       jmp   interpretLoop
     increaseLoopNest: 
                       inc   cx
