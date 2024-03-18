@@ -45,8 +45,7 @@ main proc
                       cmp   al, 0                 ; Zero if code ends
                       jne   interpretContinue
     ; End of program
-                      mov   ah, 4ch
-                      int   21h
+                      ret
     interpretContinue:
 
     ; Command switch
