@@ -24,7 +24,7 @@ main proc
                       mov   ah, 3Dh               ; Open file for reading
     ; DX = Pointer to the file name
                       int   21h
-                      mov   bx, ax                ; Save file handle
+                      xchg  bx, ax                ; Save file handle
 
     ; Read file content into the code variable
                       mov   ah, 3Fh
