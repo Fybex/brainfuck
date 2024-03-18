@@ -118,7 +118,6 @@ main proc
                       jmp   interpretLoop
 
     output:           
-                      mov   dx, [di]
                       mov   ah, 02h               ; Stdout function code
                       cmp   word ptr [di], 0Ah    ; Check if it's a newline
                       jne   outputContinue
