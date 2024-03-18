@@ -140,7 +140,7 @@ main proc
                       pop   cx                       ; Restore loop counter
                       or    ax, ax                   ; If 0 bytes read, it's EOF
                       jnz   skipEOF
-                      mov   word ptr [di], 0FFFFh    ; Set to -1 if EOF
+                      dec   word ptr [di]            ; Set to -1 if EOF (it was 0 before, so dec can be used)
     skipEOF:          
                       cmp   word ptr [di], 0Dh       ; Read again if it's a carriage return
                       je    inputChar
