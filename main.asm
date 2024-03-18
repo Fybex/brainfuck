@@ -131,8 +131,8 @@ main proc
 
     inputChar:        
                       mov   ah, 3Fh                  ; Stdin function code
-                      mov   bx, 0                    ; Stdin file handle
-                      mov   word ptr [di], 0         ; Clear the current cell to hold input correctly
+                      xor   bx, bx                   ; Stdin file handle (bx = 0)
+                      mov   word ptr [di], bx        ; Clear the current cell to hold input correctly
                       lea   dx, [di]                 ; Offset into the tape
                       push  cx                       ; Save loop counter
                       mov   cx, 1                    ; Number of bytes to read
