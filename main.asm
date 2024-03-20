@@ -38,7 +38,7 @@ main proc
 
     ; Intepreter
                       mov   di, offset tape       ; Tape pointer
-                      mov   si, offset code       ; Start at -1
+                      mov   si, offset code       ; Code pointer
 
     interpretLoop:    
                       lodsb                       ; Load the current command
