@@ -43,60 +43,39 @@ main proc
     interpretLoop:    
                       lodsb                       ; Load the current command
                       cmp   al, 0                 ; Zero if code ends
-                      jne   interpretContinue
+                      jne   increment
     ; End of program
                       ret
     interpretContinue:
 
-    ; Command switch
-                      cmp   al, '+'
-                      je    increment
-                      cmp   al, '-'
-                      je    decrement
-                      cmp   al, '>'
-                      je    moveRight
-                      cmp   al, '<'
-                      je    moveLeft
-                      cmp   al, '['
-                      je    startLoop
-                      cmp   al, ']'
-                      je    endLoop
-                      cmp   al, '.'
-                      je    output
-                      cmp   al, ','
-                      je    inputChar
-
-                      jmp   interpretLoop
-
     ; Commands
     increment:        
+                      cmp   al, '+'
+                      jne   decrement
                       inc   word ptr [di]
-                      jmp   interpretLoop
 
     decrement:        
+                      cmp   al, '-'
+                      jne   moveRight
                       dec   word ptr [di]
-                      jmp   interpretLoop
 
     moveRight:        
+                      cmp   al, '>'
+                      jne   moveLeft
                       add   di, 2
-                      jmp   interpretLoop
 
     moveLeft:         
+                      cmp   al, '<'
+                      jne   startLoop
                       sub   di, 2
-                      jmp   interpretLoop
 
     startLoop:        
+                      cmp   al, '['
+                      jne   endLoop
                       cmp   word ptr [di], 0
                       jz    findLoopEnd           ; Skip loop if 0
                       push  si                    ; Save loop start pointer
                       jmp   interpretLoop
-
-    endLoop:          
-                      cmp   word ptr [di], 0
-                      jnz   repeatLoop            ; Jump back to start if not 0
-                      pop   dx                    ; Clean up the stack in non-used dx register
-                      jmp   interpretLoop
-
     findLoopEnd:      
                       mov   cx, 1                 ; Increase loop nest level
     searchLoopEnd:    
@@ -111,12 +90,21 @@ main proc
     increaseLoopNest: 
                       inc   cx
                       jmp   searchLoopEnd
+
+    endLoop:          
+                      cmp   al, ']'
+                      jne   output
+                      cmp   word ptr [di], 0
+                      jnz   repeatLoop            ; Jump back to start if not 0
+                      pop   dx                    ; Clean up the stack in non-used dx register
+                      jmp   interpretLoop
     repeatLoop:       
                       pop   si                    ; Get loop start address
                       push  si                    ; Save it again
-                      jmp   interpretLoop
 
     output:           
+                      cmp   al, '.'
+                      jne   inputChar
                       mov   ah, 02h               ; Stdout function code
                       cmp   word ptr [di], 0Ah    ; Check if it's a newline
                       jne   outputContinue
@@ -125,9 +113,11 @@ main proc
     outputContinue:   
                       mov   dx, [di]
                       int   21h
-                      jmp   interpretLoop
 
     inputChar:        
+                      cmp   al, ','
+                      jne   interpretLoop
+    inputCharContinue:
                       mov   ah, 3Fh               ; Stdin function code
                       xor   bx, bx                ; Stdin file handle (bx = 0)
                       mov   word ptr [di], bx     ; Clear the current cell to hold input correctly
@@ -141,7 +131,7 @@ main proc
                       dec   word ptr [di]         ; Set to -1 if EOF (it was 0 before, so dec can be used)
     skipEOF:          
                       cmp   word ptr [di], 0Dh    ; Read again if it's a carriage return
-                      je    inputChar
+                      je    inputCharContinue
                       jmp   interpretLoop
 
 main endp
