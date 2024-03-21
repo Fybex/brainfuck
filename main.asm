@@ -46,7 +46,6 @@ main proc
                       jne   increment
     ; End of program
                       ret
-    interpretContinue:
 
     ; Commands
     increment:        
@@ -75,21 +74,6 @@ main proc
                       cmp   word ptr [di], 0
                       jz    findLoopEnd           ; Skip loop if 0
                       push  si                    ; Save loop start pointer
-                      jmp   interpretLoop
-    findLoopEnd:      
-                      mov   cx, 1                 ; Increase loop nest level
-    searchLoopEnd:    
-                      lodsb                       ; Next command
-                      cmp   al, '['
-                      je    increaseLoopNest
-                      cmp   al, ']'
-                      jne   searchLoopEnd
-    ; decreaseLoopNest
-                      loop  searchLoopEnd         ; Loop until cx = 0
-                      jmp   interpretLoop
-    increaseLoopNest: 
-                      inc   cx
-                      jmp   searchLoopEnd
 
     endLoop:          
                       cmp   al, ']'
@@ -133,6 +117,21 @@ main proc
                       cmp   word ptr [di], 0Dh    ; Read again if it's a carriage return
                       je    inputCharContinue
                       jmp   interpretLoop
+
+    findLoopEnd:      
+                      mov   cx, 1                 ; Increase loop nest level
+    searchLoopEnd:    
+                      lodsb                       ; Next command
+                      cmp   al, '['
+                      je    increaseLoopNest
+                      cmp   al, ']'
+                      jne   searchLoopEnd
+    ; decreaseLoopNest
+                      loop  searchLoopEnd         ; Loop until cx = 0
+                      jmp   interpretLoop
+    increaseLoopNest: 
+                      inc   cx
+                      jmp   searchLoopEnd
 
 main endp
 end main
