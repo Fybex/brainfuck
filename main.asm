@@ -17,7 +17,7 @@ main proc
                       mov   cl, [si-2]            ; Load length of command line
                       mov   dx, si                ; Store the pointer to the start of the command line text
                       add   si, cx                ; Move to the end
-                      mov   byte ptr [si-1], 0    ; Null-terminate the command line argument
+                      mov   byte ptr [si-1], al    ; Null-terminate the command line argument (al = 0)
                       
 
     ; Open file using command line argument directly
@@ -37,12 +37,14 @@ main proc
                       int   21h
 
     ; Intepreter
+                      xor   bx, bx                ; Stdin file handle (bx = 0)
+                        
                       mov   di, offset tape       ; Tape pointer
                       mov   si, offset code       ; Code pointer
 
     interpretLoop:    
                       lodsb                       ; Load the current command
-                      cmp   al, 0                 ; Zero if code ends
+                      cmp   al, bl                ; Zero if code ends
                       jne   increment
     ; End of program
                       ret
@@ -71,14 +73,14 @@ main proc
     startLoop:        
                       cmp   al, '['
                       jne   endLoop
-                      cmp   word ptr [di], 0
+                      cmp   word ptr [di], bx
                       jz    findLoopEnd           ; Skip loop if 0
                       push  si                    ; Save loop start pointer
 
     endLoop:          
                       cmp   al, ']'
                       jne   output
-                      cmp   word ptr [di], 0
+                      cmp   word ptr [di], bx
                       jnz   repeatLoop            ; Jump back to start if not 0
                       pop   dx                    ; Clean up the stack in non-used dx register
                       jmp   interpretLoop
@@ -103,7 +105,6 @@ main proc
                       jne   interpretLoop
     inputCharContinue:
                       mov   ah, 3Fh               ; Stdin function code
-                      xor   bx, bx                ; Stdin file handle (bx = 0)
                       mov   word ptr [di], bx     ; Clear the current cell to hold input correctly
                       lea   dx, [di]              ; Offset into the tape
                       push  cx                    ; Save loop counter
