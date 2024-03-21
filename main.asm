@@ -9,7 +9,9 @@
 main proc
     ; Clean tape and code
                       mov   di, offset tape        ; Tape pointer
+                      push  di                     ; Save tape pointer
                       mov   cx, 20000              ; Number of cells
+                      push  cx                     ; Save 20000
                       rep   stosw
 
     ; Read argument
@@ -28,8 +30,9 @@ main proc
 
     ; Read file content into the code variable
                       mov   ah, 3Fh
-                      lea   dx, code
-                      mov   cx, 10000              ; Number of bytes to read
+                      pop   cx                     ; Number of bytes to read (need only 10000, but 20000 is ok as well)
+                      mov   dx, offset code
+                      push  dx                     ; Save the pointer to the code variable
                       int   21h
 
     ; Close file
@@ -39,8 +42,9 @@ main proc
     ; Intepreter
                       xor   bx, bx                 ; Stdin file handle (bx = 0)
                         
-                      mov   di, offset tape        ; Tape pointer
-                      mov   si, offset code        ; Code pointer
+                      pop   si                     ; Restore code pointer
+                      pop   di                     ; Restore tape pointer
+                      
 
     interpretLoop:    
                       lodsb                        ; Load the current command
