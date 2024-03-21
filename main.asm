@@ -44,8 +44,8 @@ main proc
 
     interpretLoop:    
                       lodsb                        ; Load the current command
-                      cmp   al, bl                 ; Zero if code ends
-                      jne   increment
+                      test  al, al                 ; Zero if code ends
+                      jnz   increment
     ; End of program
                       ret
 
@@ -63,12 +63,16 @@ main proc
     moveRight:        
                       cmp   al, '>'
                       jne   moveLeft
-                      add   di, 2
+    ; Move to the next cell
+                      inc   di
+                      inc   di
 
     moveLeft:         
                       cmp   al, '<'
                       jne   startLoop
-                      sub   di, 2
+    ; Move to the previous cell
+                      dec   di
+                      dec   di
 
     startLoop:        
                       cmp   al, '['
@@ -111,7 +115,7 @@ main proc
                       mov   cx, 1                  ; Number of bytes to read
                       int   21h
                       pop   cx                     ; Restore loop counter
-                      or    ax, ax                 ; If 0 bytes read, it's EOF
+                      test  ax, ax                 ; If 0 bytes read, it's EOF
                       jnz   skipEOF
                       dec   word ptr [di]          ; Set to -1 if EOF (it was 0 before, so dec can be used)
     skipEOF:          
