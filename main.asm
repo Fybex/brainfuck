@@ -81,7 +81,7 @@ main proc
                       cmp   al, '['
                       jne   endLoop
                       cmp   word ptr [di], bx
-                      jz    findLoopEnd           ; Skip loop if 0
+                      jz    searchLoopEnd         ; Skip loop if 0
                       push  si                    ; Save loop start pointer
 
     endLoop:          
@@ -122,8 +122,7 @@ main proc
                       cmp   word ptr [di], 0Dh    ; Read again if it's a carriage return
                       je    inputCharContinue
                       jmp   interpretLoop
-
-    findLoopEnd:      
+   
     searchLoopEnd:    
                       lodsb                       ; Next command
                       cmp   al, '['
