@@ -113,10 +113,8 @@ main proc
                       mov   ah, 3Fh               ; Stdin function code
                       mov   word ptr [di], bx     ; Clear the current cell to hold input correctly
                       lea   dx, [di]              ; Offset into the tape
-                      push  cx                    ; Save loop counter
                       mov   cx, 1                 ; Number of bytes to read
                       int   21h
-                      pop   cx                    ; Restore loop counter
                       test  ax, ax                ; If 0 bytes read, it's EOF
                       jnz   skipEOF
                       dec   word ptr [di]         ; Set to -1 if EOF (it was 0 before, so dec can be used)
