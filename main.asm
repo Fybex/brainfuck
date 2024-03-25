@@ -45,6 +45,7 @@ main proc
                       
 
     interpretLoop:    
+                      mov   cx, 1                 ; Loop counter or Number of bytes to read
                       lodsb                       ; Load the current command
                       test  al, al                ; Zero if code ends
                       jnz   increment
@@ -113,7 +114,6 @@ main proc
                       mov   ah, 3Fh               ; Stdin function code
                       mov   word ptr [di], bx     ; Clear the current cell to hold input correctly
                       lea   dx, [di]              ; Offset into the tape
-                      mov   cx, 1                 ; Number of bytes to read
                       int   21h
                       test  ax, ax                ; If 0 bytes read, it's EOF
                       jnz   skipEOF
@@ -124,7 +124,6 @@ main proc
                       jmp   interpretLoop
 
     findLoopEnd:      
-                      mov   cx, 1                 ; Increase loop nest level
     searchLoopEnd:    
                       lodsb                       ; Next command
                       cmp   al, '['
