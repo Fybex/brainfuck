@@ -33,10 +33,6 @@ main proc
                       push  dx                    ; Save the pointer to the code variable
                       int   21h
 
-    ; Close file
-                      mov   ah, 3Eh
-                      int   21h
-
     ; Intepreter
                       xor   bx, bx                ; Stdin file handle (bx = 0)
                         
