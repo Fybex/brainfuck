@@ -75,21 +75,11 @@ main proc
 
     startLoop:        
                       cmp   al, '['
-                      jne   endLoop
-                      cmp   word ptr [di], bx
-                      jz    searchLoopEnd         ; Skip loop if 0
-                      push  si                    ; Save loop start pointer
+                      je    startLoopContinue
 
     endLoop:          
                       cmp   al, ']'
-                      jne   output
-                      cmp   word ptr [di], bx
-                      jnz   repeatLoop            ; Jump back to start if not 0
-                      pop   dx                    ; Clean up the stack in non-used dx register
-                      jmp   interpretLoop
-    repeatLoop:       
-                      pop   si                    ; Get loop start address
-                      push  si                    ; Save it again
+                      je    endLoopContinue
 
     output:           
                       cmp   al, '.'
@@ -118,6 +108,14 @@ main proc
                       cmp   word ptr [di], 0Dh    ; Read again if it's a carriage return
                       je    inputCharContinue
                       jmp   interpretLoop
+
+    endLoopContinue:  
+                      pop   si                    ; Get loop start address
+
+    startLoopContinue:
+                      push  si                    ; Save it again
+                      cmp   word ptr [di], bx     ; Skip loop if 0
+                      jne   interpretLoop
    
     searchLoopEnd:    
                       lodsb                       ; Next command
@@ -127,6 +125,7 @@ main proc
                       jne   searchLoopEnd
     ; decreaseLoopNest
                       loop  searchLoopEnd         ; Loop until cx = 0
+                      pop   dx                    ; Clean up the stack in non-used dx register
                       jmp   interpretLoop
     increaseLoopNest: 
                       inc   cx
