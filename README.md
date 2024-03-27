@@ -1,6 +1,6 @@
 # Brainfuck Interpreter in Assembly
 
-This repository contains an Assembly language implementation of a Brainfuck interpreter. It's designed to be compiled into a `.com` executable for DOS.
+This repository contains an Assembly language implementation of a Brainfuck interpreter, developed as part of a contest focused on creating the smallest possible `.com` executable for DOS.
 
 ## File Structure
 
@@ -17,5 +17,10 @@ This repository contains an Assembly language implementation of a Brainfuck inte
 ```bash
 tasm /s /m /n /q /zn main.asm
 tlink /3 /t /n /x main.obj
+```
+
+## Usage
+
+```bash
 main code.b <input.txt >output.txt
 ```
